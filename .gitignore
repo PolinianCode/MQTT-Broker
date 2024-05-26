@@ -1,6 +1,12 @@
 
 .vs/
 
+# Ignore Debug directory
+Debug/
+
+# Ignore logs directory
+logs/
+
 
 # Prerequisites
 *.d
@@ -34,3 +40,6 @@
 *.exe
 *.out
 *.app
+test.py
+
+
