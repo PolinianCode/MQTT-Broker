@@ -78,8 +78,6 @@ void TCPServer::handleClient(SOCKET clientSocket) {
             int bytesReceived = recv(clientSocket, buffer, 1024, 0);
 
             if (bytesReceived > 0) {
-                std::cout << "Received data: " << buffer << std::endl;
-
                 std::vector<unsigned char> message(buffer, buffer + bytesReceived);
                 broker.dispatchMessage(message, clientSocket);
             }

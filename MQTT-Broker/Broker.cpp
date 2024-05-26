@@ -20,7 +20,6 @@ void Broker::createTopic(const std::string& topic) {
     }
 }
 
-
 void Broker::handleConnect(const std::vector<unsigned char>& message, int clientSocket) {
     if (message.size() < 10) { 
         std::cerr << "Invalid CONNECT packet size." << std::endl;
@@ -67,7 +66,16 @@ void Broker::handlePing(int clientSocket) {
 
 
 void Broker::handlePublish(const std::vector<unsigned char>& message, int clientSocket) {
-    std::cout << "Published" << std::endl;
+    size_t index = 2; 
+
+    uint16_t topicLength = (message[index] << 8) | message[index + 1];
+    index += 2;
+    std::string topic(message.begin() + index, message.begin() + index + topicLength);
+    index += topicLength;
+
+    std::string payload(message.begin() + index, message.end());
+
+    std::cout << "Received PUBLISH on topic " << topic << " with payload: " << payload << std::endl;
 }
 
 
