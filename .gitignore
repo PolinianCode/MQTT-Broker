@@ -44,3 +44,6 @@ test.py
 
 
 /MQTT-Broker/x64
+*.pdb
+subs.client as mqtt
+x64/Debug/MQTT-Broker.pdb
