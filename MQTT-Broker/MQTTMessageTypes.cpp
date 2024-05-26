@@ -1,0 +1,11 @@
+constexpr unsigned char MQTT_MSG_CONNECT = 0x10;
+constexpr unsigned char MQTT_MSG_CONNACK = 0x20;
+constexpr unsigned char MQTT_MSG_PUBLISH = 0x30;
+constexpr unsigned char MQTT_MSG_PUBACK = 0x40;
+constexpr unsigned char MQTT_MSG_SUBSCRIBE = 0x80;
+constexpr unsigned char MQTT_MSG_SUBACK = 0x90;
+constexpr unsigned char MQTT_MSG_UNSUBSCRIBE = 0xA0;
+constexpr unsigned char MQTT_MSG_UNSUBACK = 0xB0;
+constexpr unsigned char MQTT_MSG_PINGREQ = 0xC0;
+constexpr unsigned char MQTT_MSG_PINGRESP = 0xD0;
+constexpr unsigned char MQTT_MSG_DISCONNECT = 0xE0;
