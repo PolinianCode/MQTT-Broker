@@ -6,8 +6,19 @@
 #include <string>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <mutex>
 
 #pragma comment(lib, "Ws2_32.lib")
+
+
+
+void Broker::createTopic(const std::string& topic) {
+    std::lock_guard<std::mutex> lock(mtx);
+    if (topics.find(topic) == topics.end()) {
+        topics.insert(topic);
+        std::cout << "Topic created: " << topic << std::endl;
+    }
+}
 
 
 void Broker::handleConnect(const std::vector<unsigned char>& message, int clientSocket) {
@@ -48,6 +59,17 @@ void Broker::handleConnect(const std::vector<unsigned char>& message, int client
     std::cout << "Received CONNECT from " << clientId << ", responding with CONNACK." << std::endl;
 }
 
+void Broker::handlePing(int clientSocket) {
+    std::vector<unsigned char> pingResp = { 0xD0, 0x00 };  // PINGRESP packet
+    send(clientSocket, reinterpret_cast<const char*>(pingResp.data()), pingResp.size(), 0);
+    std::cout << "Received PINGREQ, sent PINGRESP." << std::endl;
+}
+
+
+void Broker::handlePublish(const std::vector<unsigned char>& message, int clientSocket) {
+    std::cout << "Published" << std::endl;
+}
+
 
 void Broker::dispatchMessage(const std::vector<unsigned char>& message, int clientSocket) {
 	unsigned char messageType = message[0];
@@ -55,14 +77,14 @@ void Broker::dispatchMessage(const std::vector<unsigned char>& message, int clie
         case MQTT_MSG_CONNECT:
             handleConnect(message, clientSocket);
             break;
-        /*case MQTT_MSG_PUBLISH:
-            handlePublish(message);
-            break;
-        case MQTT_MSG_SUBSCRIBE:
-            handleSubscribe(message);
-            break;
         case MQTT_MSG_PINGREQ:
-            handlePing(message);
+            handlePing(clientSocket);
+            break;
+        case MQTT_MSG_PUBLISH:
+            handlePublish(message, clientSocket);
+            break;
+        /*case MQTT_MSG_SUBSCRIBE:
+            handleSubscribe(message);
             break;
         */
         default:

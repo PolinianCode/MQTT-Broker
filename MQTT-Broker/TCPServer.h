@@ -22,6 +22,7 @@ public:
 private:
 	SOCKET serverSocket;
 	Broker broker;
+
 	void initWinsock();
 	
 };

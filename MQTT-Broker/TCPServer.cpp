@@ -7,6 +7,8 @@
 
 TCPServer::TCPServer() :serverSocket(INVALID_SOCKET) {
 	initWinsock();
+    broker.createTopic("home/sensors/temperature");
+    broker.createTopic("home/sensors/humidity");
 }
 
 
@@ -24,9 +26,9 @@ void TCPServer::initWinsock() {
 }
 
 bool TCPServer::startServer(int port) {
-    serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // Creating socket based on IPv4 and TCP
     if (serverSocket == INVALID_SOCKET) {
-        std::cerr << "Failed to create socket: " << WSAGetLastError() << std::endl;
+        std::cerr << "Erro starting socket: " << WSAGetLastError() << std::endl;
         return false;
     }
 
@@ -36,7 +38,7 @@ bool TCPServer::startServer(int port) {
     server.sin_addr.s_addr = INADDR_ANY;
 
     if (bind(serverSocket, (sockaddr*)&server, sizeof(server)) == SOCKET_ERROR) {
-        std::cerr << "Bind failed: " << WSAGetLastError() << std::endl;
+        std::cerr << "Error while setting port: " << WSAGetLastError() << std::endl;
         return false;
     }
 
@@ -51,6 +53,8 @@ void TCPServer::stopServer() {
         serverSocket = INVALID_SOCKET;
     }
 }
+
+
 void TCPServer::acceptClients() {
     sockaddr_in client;
     int clientSize = sizeof(client);
@@ -59,32 +63,33 @@ void TCPServer::acceptClients() {
         SOCKET clientSocket = accept(serverSocket, (sockaddr*)&client, &clientSize);
         if (clientSocket == INVALID_SOCKET) {
             std::cerr << "Failed to accept client: " << WSAGetLastError() << std::endl;
-            continue;  // Continue accepting next connections
+            continue; 
         }
 
         std::thread([this, clientSocket]() { handleClient(clientSocket); }).detach();
     }
 }
+
 void TCPServer::handleClient(SOCKET clientSocket) {
     try {
-        while (true) {  // Keep the connection alive
+        while (true) {
             char buffer[1024];
             memset(buffer, 0, sizeof(buffer));
             int bytesReceived = recv(clientSocket, buffer, 1024, 0);
 
             if (bytesReceived > 0) {
                 std::cout << "Received data: " << buffer << std::endl;
-                // Dispatch the message for further processing
+
                 std::vector<unsigned char> message(buffer, buffer + bytesReceived);
                 broker.dispatchMessage(message, clientSocket);
             }
             else if (bytesReceived == 0) {
                 std::cout << "Client disconnected" << std::endl;
-                break;  // Break the loop to close socket, client has closed the connection
+                break; 
             }
             else {
-                std::cerr << "recv failed: " << WSAGetLastError() << std::endl;
-                break;  // Break on error
+                std::cerr << "Receive failed: " << WSAGetLastError() << std::endl;
+                break; 
             }
         }
     }
@@ -92,7 +97,7 @@ void TCPServer::handleClient(SOCKET clientSocket) {
         std::cerr << "Exception handling client: " << e.what() << std::endl;
     }
 
-    closesocket(clientSocket);  // Close the client socket
+    closesocket(clientSocket);
 }
 
 
