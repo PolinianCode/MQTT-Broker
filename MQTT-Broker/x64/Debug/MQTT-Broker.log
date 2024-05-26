@@ -1,5 +1,0 @@
-﻿  MQTT-Broker.cpp
-  TCPServer.cpp
-C:\Users\Polinian\Desktop\MQTT\MQTT-Broker\MQTT-Broker\TCPServer.cpp(79,49): warning C4244: 'argument': conversion from 'SOCKET' to 'int', possible loss of data
-  Generating Code...
-  MQTT-Broker.vcxproj -> C:\Users\Polinian\Desktop\MQTT\MQTT-Broker\x64\Debug\MQTT-Broker.exe
