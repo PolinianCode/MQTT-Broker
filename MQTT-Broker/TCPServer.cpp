@@ -9,6 +9,7 @@ TCPServer::TCPServer() :serverSocket(INVALID_SOCKET) {
 	initWinsock();
     broker.createTopic("home/sensors/temperature");
     broker.createTopic("home/sensors/humidity");
+    broker.createTopic("home/sensors/light");
 }
 
 
