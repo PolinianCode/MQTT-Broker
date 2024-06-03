@@ -47,3 +47,5 @@ test.py
 *.pdb
 subs.client as mqtt
 x64/Debug/MQTT-Broker.pdb
+
+/device/device-weather/
