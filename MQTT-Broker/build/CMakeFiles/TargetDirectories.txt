@@ -1,0 +1,3 @@
+/home/polinian/Documents/projects/MQTT-Broker/MQTT-Broker/build/CMakeFiles/MQTTBrokerExecutable.dir
+/home/polinian/Documents/projects/MQTT-Broker/MQTT-Broker/build/CMakeFiles/edit_cache.dir
+/home/polinian/Documents/projects/MQTT-Broker/MQTT-Broker/build/CMakeFiles/rebuild_cache.dir
