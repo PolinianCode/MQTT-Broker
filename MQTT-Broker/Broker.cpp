@@ -175,7 +175,7 @@ void Broker::handlePuback(const std::vector<unsigned char>& message, int clientS
     uint16_t packetId = (message[2] << 8) | message[3];
     std::cout << "Received PUBACK"  << std::endl;
 }
-//Call function dependin o message type from the client
+//Call function depending on message type from the client
 void Broker::dispatchMessage(const std::vector<unsigned char>& message, int clientSocket) {
 	unsigned char messageType = message[0];
 
