@@ -38,7 +38,7 @@ void Broker::handleConnect(const std::vector<unsigned char>& message, int client
         return;
     }
 
-    
+
     size_t index = 2;
 
     // Extract Protocol Name
@@ -67,7 +67,8 @@ void Broker::handleConnect(const std::vector<unsigned char>& message, int client
     std::vector<unsigned char> connAck = { 0x20, 0x02, 0x00, 0x00 };
     send(clientSocket, reinterpret_cast<const char*>(connAck.data()), connAck.size(), 0);
 
-    std::cout << "Received CONNECT from " << clientId << ", responding with CONNACK." << std::endl;
+    std::cout << "Received CONNECT from " << clientId << " with protocol " << protocolName
+        << ", version " << (int)protocolLevel << ", responding with CONNACK." << std::endl;
 }
 
 
@@ -80,6 +81,11 @@ void Broker::handlePing(int clientSocket) {
 
 //To review
 void Broker::handlePublish(const std::vector<unsigned char>& message, int clientSocket) {
+    if (message.size() < 4) {
+        std::cerr << "Invalid PUBLISH packet size." << std::endl;
+        return;
+    }
+
     size_t index = 2; 
 
     uint16_t topicLength = (message[index] << 8) | message[index + 1];
