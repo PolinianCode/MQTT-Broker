@@ -72,37 +72,70 @@ void TCPServer::acceptClients() {
 }
 
 void TCPServer::handleClient(SOCKET clientSocket) {
-    try {
-        while (true) {
-            char buffer[1024];
-            memset(buffer, 0, sizeof(buffer));
-            int bytesReceived = recv(clientSocket, buffer, 1024, 0);
+    std::vector<unsigned char> buffer;
+    while (true) {
+        char tempBuffer[2048];
+        memset(tempBuffer, 0, sizeof(tempBuffer));
+        int bytesReceived = recv(clientSocket, tempBuffer, sizeof(tempBuffer), 0);
 
-            if (bytesReceived > 0) {
+        if (bytesReceived > 0) {
+            buffer.insert(buffer.end(), tempBuffer, tempBuffer + bytesReceived);
 
-                for (int i = 0; i < bytesReceived; i++) {
-                    printf("%02X ", (unsigned char)buffer[i]);
-                }
-
-                std::vector<unsigned char> message(buffer, buffer + bytesReceived);
+            // Process all complete messages in the buffer
+            while (canProcessMessage(buffer)) {
+                std::vector<unsigned char> message = extractMessage(buffer);
                 broker.dispatchMessage(message, clientSocket);
             }
-            else if (bytesReceived == 0) {
-                std::cout << "Client disconnected" << std::endl;
-                break; 
-            }
-            else {
-                std::cerr << "Receive failed: " << WSAGetLastError() << std::endl;
-                break; 
-            }
+        }
+        else if (bytesReceived == 0) {
+            std::cout << "Client disconnected" << std::endl;
+            break;
+        }
+        else {
+            std::cerr << "Receive failed: " << WSAGetLastError() << std::endl;
+            break;
         }
     }
-    catch (const std::exception& e) {
-        std::cerr << "Exception handling client: " << e.what() << std::endl;
-    }
-
-    closesocket(clientSocket);
 }
+
+bool TCPServer::canProcessMessage(const std::vector<unsigned char>& buffer) {
+    if (buffer.size() < 2) return false; // Not enough data to read the fixed header and remaining length
+
+    size_t index = 1; // Start after the fixed header's first byte
+    int remainingLength = 0;
+    int multiplier = 1;
+    unsigned char encodedByte;
+
+    do {
+        if (index >= buffer.size()) return false; // Not enough data to decode remaining length
+        encodedByte = buffer[index];
+        remainingLength += (encodedByte & 127) * multiplier;
+        multiplier *= 128;
+        index++;
+    } while ((encodedByte & 128) != 0 && index < buffer.size());
+
+    return (index + remainingLength <= buffer.size()); // Check if the whole message is in buffer
+}
+
+std::vector<unsigned char> TCPServer::extractMessage(std::vector<unsigned char>& buffer) {
+    size_t index = 1;
+    int multiplier = 1;
+    int remainingLength = 0;
+    unsigned char encodedByte;
+
+    do {
+        encodedByte = buffer[index];
+        remainingLength += (encodedByte & 127) * multiplier;
+        multiplier *= 128;
+        index++;
+    } while ((encodedByte & 128) != 0);
+
+    size_t totalLength = index + remainingLength; // Total message size
+    std::vector<unsigned char> message(buffer.begin(), buffer.begin() + totalLength);
+    buffer.erase(buffer.begin(), buffer.begin() + totalLength); // Remove the processed message
+    return message;
+}
+
 
 
 void TCPServer::runServer() {

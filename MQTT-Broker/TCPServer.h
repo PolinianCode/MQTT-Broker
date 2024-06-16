@@ -18,6 +18,8 @@ public:
 	void runServer();
 	void acceptClients();
 	void handleClient(SOCKET clientSocket);
+	bool canProcessMessage(const std::vector<unsigned char>& buffer);
+	std::vector<unsigned  char> extractMessage(std::vector<unsigned char>& buffer);
 
 private:
 	SOCKET serverSocket;
