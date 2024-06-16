@@ -81,6 +81,12 @@ void TCPServer::handleClient(SOCKET clientSocket) {
         if (bytesReceived > 0) {
             buffer.insert(buffer.end(), tempBuffer, tempBuffer + bytesReceived);
 
+            /*
+               for (int i = 0; i < bytesReceived; i++) {
+                printf("%02X ", (unsigned char)buffer[i]);
+            }
+            */
+
             // Process all complete messages in the buffer
             while (canProcessMessage(buffer)) {
                 std::vector<unsigned char> message = extractMessage(buffer);

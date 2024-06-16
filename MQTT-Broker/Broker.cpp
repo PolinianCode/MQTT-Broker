@@ -167,10 +167,18 @@ void Broker::handleSubscribe(const std::vector<unsigned char>& message, int clie
     send(clientSocket, reinterpret_cast<const char*>(subAck.data()), subAck.size(), 0);
 }
 
-
+void Broker::handlePuback(const std::vector<unsigned char>& message, int clientSocket) {
+    if (message.size() < 4) {
+        std::cerr << "Invalid PUBACK packet size." << std::endl;
+        return;
+    }
+    uint16_t packetId = (message[2] << 8) | message[3];
+    std::cout << "Received PUBACK"  << std::endl;
+}
 //Call function dependin o message type from the client
 void Broker::dispatchMessage(const std::vector<unsigned char>& message, int clientSocket) {
 	unsigned char messageType = message[0];
+
     switch (messageType) {
         case MQTT_MSG_CONNECT:
             handleConnect(message, clientSocket);
@@ -183,6 +191,9 @@ void Broker::dispatchMessage(const std::vector<unsigned char>& message, int clie
             break;
         case MQTT_MSG_SUBSCRIBE:
             handleSubscribe(message, clientSocket);
+            break;
+        case MQTT_MSG_PUBACK:
+            handlePuback(message, clientSocket);
             break;
         default:
             std::cerr << "Unknown message type" << std::endl;

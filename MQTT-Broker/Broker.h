@@ -11,6 +11,7 @@ public:
     void handleConnect(const std::vector<unsigned char>& message, int clientSocket);
     void handlePublish(const std::vector<unsigned char>& message, int clientSocket);
     void handleSubscribe(const std::vector<unsigned char>& message, int clientSocket);
+    void handlePuback(const std::vector<unsigned char>& message, int clientSocket);
     void handlePing(int clientSocket);
 	void dispatchMessage(const std::vector<unsigned char>& message, int clietnSocket);
 

@@ -43,7 +43,7 @@ def simulate_weather_station():
     try:
         while True:
             publish_weather_data(client)
-            time.sleep(2)
+            time.sleep(10)
     except KeyboardInterrupt:
         client.loop_stop()
 
