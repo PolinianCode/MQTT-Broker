@@ -2,38 +2,40 @@ import random
 import time
 import paho.mqtt.client as mqtt
 
-MQTT_BROKER = ""
+MQTT_BROKER = "192.168.31.64"
 MQTT_PORT = 1883
 MQTT_TEMPERATURE_TOPIC = "home/sensors/temperature"
 MQTT_HUMIDITY_TOPIC = "home/sensors/humidity"
 MQTT_LIGHT_TOPIC = "home/sensors/light"
+CLIENT_ID = "clientId-4lju7VgtdO"
 
 def generate_weather_data():
     temperature = round(random.uniform(20, 25), 2)
     humidity = round(random.uniform(60, 70), 2)  
-    light_intensity = round(random.uniform(800, 1000), 2) 
+    light = 800
 
-    return temperature, humidity, light_intensity
+    return temperature, humidity, light
 
 def publish_weather_data(client):
-    temperature, humidity, light_intensity = generate_weather_data()
-    client.publish(MQTT_TEMPERATURE_TOPIC, temperature)
-    client.publish(MQTT_HUMIDITY_TOPIC, humidity)
-    client.publish(MQTT_LIGHT_TOPIC, light_intensity)
-
-    print(f"Published: temperature: {temperature}, humidity: {humidity}, light: {light_intensity}")
+    temperature, humidity, light = generate_weather_data()
+    client.publish(MQTT_TEMPERATURE_TOPIC, str(temperature))
+    print(f"Published temperature: {temperature} to topic: {MQTT_TEMPERATURE_TOPIC}")
+    client.publish(MQTT_HUMIDITY_TOPIC, str(humidity))
+    print(f"Published humidity: {humidity} to topic: {MQTT_HUMIDITY_TOPIC}")
+    client.publish(MQTT_LIGHT_TOPIC, str(light))
+    print(f"Published light: {light} to topic: {MQTT_LIGHT_TOPIC}")
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        print("Connected to MQTT Broker!")
+        print("CONNECTED")
     else:
-        print(f"Failed to connect, return code {rc}")
+        print(f"FAILED TO CONNECT {rc}")
 
 
 
 def simulate_weather_station():
 
-    client = mqtt.Client()
+    client = mqtt.Client(client_id=CLIENT_ID)
     client.on_connect = on_connect
     client.connect(MQTT_BROKER, MQTT_PORT, 60)
     client.loop_start()
@@ -44,7 +46,6 @@ def simulate_weather_station():
             time.sleep(2)
     except KeyboardInterrupt:
         client.loop_stop()
-        print("Weather station simulation stopped.")
 
         
 if __name__ == "__main__":

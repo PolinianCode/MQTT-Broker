@@ -6,6 +6,8 @@ import paho.mqtt.client as mqtt
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
     client.subscribe("home/sensors/temperature")
+    client.subscribe("home/sensors/humidity")
+    client.subscribe("home/sensors/light")
 
 # The callback for when a PUBLISH message is received from the server.
 
