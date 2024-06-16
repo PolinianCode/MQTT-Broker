@@ -2,7 +2,7 @@ import random
 import time
 import paho.mqtt.client as mqtt
 
-MQTT_BROKER = "192.168.31.64"
+MQTT_BROKER = "52.138.220.122"
 MQTT_PORT = 1883
 MQTT_TEMPERATURE_TOPIC = "home/sensors/temperature"
 MQTT_HUMIDITY_TOPIC = "home/sensors/humidity"
@@ -10,9 +10,9 @@ MQTT_LIGHT_TOPIC = "home/sensors/light"
 CLIENT_ID = "clientId-4lju7VgtdO"
 
 def generate_weather_data():
-    temperature = round(random.uniform(20, 25), 2)
-    humidity = round(random.uniform(60, 70), 2)  
-    light = 800
+    temperature = round(random.uniform(20, 25), 1)
+    humidity = round(random.uniform(60, 70), 1)  
+    light = round(random.uniform(800, 830), 1)
 
     return temperature, humidity, light
 
